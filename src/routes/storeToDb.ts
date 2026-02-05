@@ -17,7 +17,15 @@ router.post("/",upload.single("file"),  async(req:Request, res:Response)=>{
 
     console.log("PDF received:", file.path);
 
+
     console.log("extracted text- ", text);
+
+    const response = await ingestChunk("docs", text, {
+                                        source: "auth.pdf",
+                                        page: 300,
+                                    });
+
+    console.log("response -", response);
 
     res.status(200).json({message:"success"})
 })

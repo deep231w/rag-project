@@ -2,20 +2,21 @@ import { env } from "../config/env";
 import axios from "axios";
 
 export async function embededText(input:String):Promise<number[]> {
-    const res=await axios.post(`${env.EMBEDDING_API_URL}`,{
-        model:env.EMBEDDING_MODEL,
-        input
+    const res = await axios.post(
+    `${process.env.EMBEDDING_API_URL}?key=${env.EMBEDDING_API_KEY}`,
+    {
+      content: {
+        parts: [{ text: input }],
+      },
     },
-        {
-            headers:{
-                "Authorization": `Bearer ${env.EMBEDDING_API_KEY}`,
-                "Content-Type": "application/json",
-            },
-        }
-    )
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
 
-    console.log("response of embedings - ", res);
-    const embedding = res.data.data[0].embedding;
+  console.log("res of emped -", res.data.embedding.values)
+  return res.data.embedding.values;
 
-    return embedding;
 }
