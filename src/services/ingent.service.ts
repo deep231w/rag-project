@@ -1,11 +1,13 @@
 import { qdrant } from "../lib/qdrant";
 import { embededText } from "../lib/embeding";
+import OllamaLocalEmbded from "../lib/OllamaLocalEmbed";
+
 export async function ingestChunk(
   collection: string,
   text: string,
   payload: Record<string, any>
 ) {
-  const vector = await embededText(text);
+  const vector = await OllamaLocalEmbded(text);
 
   await qdrant.upsert(collection, {
     points: [

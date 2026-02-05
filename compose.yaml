@@ -7,6 +7,7 @@ services:
       - .env
     depends_on:
       - qdrant
+      - ollama
 
   qdrant:
     image: qdrant/qdrant:latest
@@ -15,5 +16,15 @@ services:
     volumes:
       - qdrant_data:/qdrant/storage
 
+  ollama:
+      image: ollama/ollama:latest
+      ports:
+        - "11434:11434"
+      volumes:
+        - ollama_data:/root/.ollama
+      environment:
+        - OLLAMA_HOST=0.0.0.0
+      restart: unless-stopped
 volumes:
   qdrant_data:
+  ollama_data:

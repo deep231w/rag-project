@@ -15,10 +15,10 @@ router.post("/",upload.single("file"),  async(req:Request, res:Response)=>{
 
     const text =  await extractText(file.path)
 
-    console.log("PDF received:", file.path);
+    // console.log("PDF received:", file.path);
 
 
-    console.log("extracted text- ", text);
+    // console.log("extracted text- ", text);
 
     const response = await ingestChunk("docs", text, {
                                         source: "auth.pdf",
