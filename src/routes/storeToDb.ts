@@ -17,6 +17,8 @@ router.post("/",upload.single("file"),  async(req:Request, res:Response)=>{
 
     console.log("PDF received:", file.path);
 
+    console.log("extracted text- ", text);
+
     res.status(200).json({message:"success"})
 })
 
