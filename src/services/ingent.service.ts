@@ -8,26 +8,31 @@ export async function ingestChunk(
   payload: Record<string, any>
 ) {
 
-  const chunckedText= chunckText(text);
-  
-  let vectors:number[][];
-  vectors = await OllamaLocalEmbded(chunckedText);
-  console.log(vectors.length);
-  console.log(vectors[0].length);
+    try{
+      const chunckedText= chunckText(text);
 
-  for(const vector of vectors ){
-    await qdrant.upsert(collection, {
-    points: [
-      {
-        id: crypto.randomUUID(),
-        vector,
-        payload: {
-          text,
-          ...payload,
-        },
-      },
-    ],
-  });
-  }
+      let vectors:number[][];
+      vectors = await OllamaLocalEmbded(chunckedText);
+      console.log(vectors.length);
+      console.log(vectors[0].length);
+
+      for(const vector of vectors ){
+        await qdrant.upsert(collection, {
+        points: [
+          {
+            id: crypto.randomUUID(),
+            vector,
+            payload: {
+              text,
+              ...payload,
+            },
+          },
+        ],
+      });
+      }
+    }catch(e){
+      console.log("error in ingent service-",e);
+      throw e;
+    }
   
 }
