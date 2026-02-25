@@ -10,18 +10,24 @@ export async function ingestChunk(
 
   const chunckedText= chunckText(text);
   
-  // const vector = await OllamaLocalEmbded(chunckedText);
+  let vectors:number[][];
+  vectors = await OllamaLocalEmbded(chunckedText);
+  console.log(vectors.length);
+  console.log(vectors[0].length);
 
-  // await qdrant.upsert(collection, {
-  //   points: [
-  //     {
-  //       id: crypto.randomUUID(),
-  //       vector,
-  //       payload: {
-  //         text,
-  //         ...payload,
-  //       },
-  //     },
-  //   ],
-  // });
+  for(const vector of vectors ){
+    await qdrant.upsert(collection, {
+    points: [
+      {
+        id: crypto.randomUUID(),
+        vector,
+        payload: {
+          text,
+          ...payload,
+        },
+      },
+    ],
+  });
+  }
+  
 }

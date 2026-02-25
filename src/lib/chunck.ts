@@ -1,6 +1,6 @@
 
-export function chunckText(text:string ,chunkSize=800, overlap=100){
-    const words= text.split('/\s+/');
+export function chunckText(text:string ,chunkSize=300, overlap=100){
+    const words= text.split(/\s+/);
 
     const chuncks:string[]=[];
 
@@ -10,6 +10,10 @@ export function chunckText(text:string ,chunkSize=800, overlap=100){
         chuncks.push(chunck);
         i+=chunkSize-overlap;
     }
+
+    chuncks.forEach((c, i) => {
+        console.log(`chunk ${i} length:`, c.length);
+    });
 
     console.log("chunks converted -",chuncks);
     return chuncks;
