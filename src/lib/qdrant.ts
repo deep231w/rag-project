@@ -5,3 +5,23 @@ export const qdrant = new QdrantClient({
   checkCompatibility: false,
 
 });
+
+export async function ensureCollection() {
+  const collection= await qdrant.getCollections();
+  const exist = collection.collections.some(
+    (c)=>c.name=='docs'
+  )
+
+  if(!exist){
+    await qdrant.createCollection('docs',{
+      vectors:{
+        size:768,
+        distance:"Cosine"
+      }
+    })
+    console.log("qudrant collection 'docs' created");
+  }
+
+  console.log("qudrant collection 'docs' established! ");
+
+}

@@ -30,6 +30,7 @@ export async function ingestChunk(
         ],
       });
       }
+      
     }catch(e){
       console.log("error in ingent service-",e);
       throw e;
