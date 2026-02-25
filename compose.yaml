@@ -5,6 +5,16 @@ services:
       - "3000:3000"
     env_file:
       - .env
+    develop:
+      watch:
+        - path: .
+          action: sync
+          target: /src 
+        - action: rebuild
+          path: package*.json
+        - action: sync+restart
+          path: index.ts
+          target: /src
     depends_on:
       - qdrant
       - ollama
