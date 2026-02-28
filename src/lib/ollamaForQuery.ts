@@ -1,9 +1,9 @@
 import axios from "axios";
 import { env } from "../config/env";
 
-export async function OllamaQueryQuestion(context:string[], question:string){
+export async function OllamaQueryQuestion(context:string, question:string){
     try{
-        const res= axios.post(`${env.OLLAMA_URL}/api/generate`,{
+        const res= await axios.post(`${env.OLLAMA_URL}/api/generate`,{
             model:"phi3",
             prompt:`
                 Answer the question only using the context below.
@@ -19,7 +19,7 @@ export async function OllamaQueryQuestion(context:string[], question:string){
         })
 
         console.log("response of query question to ollama- ", res);
-        
+
     }catch(e){
         console.log("error during query to ollama - ",e );
     }

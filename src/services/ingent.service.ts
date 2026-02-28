@@ -17,15 +17,15 @@ export async function ingestChunk(
       console.log(vectors.length);
       console.log(vectors[0].length);
 
-      for(const vector of vectors ){
+      for(let i=0; i<vectors.length; i++ ){
         await qdrant.upsert(collection, {
         points: [
           {
             id: crypto.randomUUID(),
-            vector,
+            vector:vectors[i],
             payload: {
               userId,
-              text,
+              text:chunckedText[i],
               ...payload,
             },
           },

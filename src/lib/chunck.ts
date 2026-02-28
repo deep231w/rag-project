@@ -1,5 +1,5 @@
 
-export function chunckText(text:string ,chunkSize=500, overlap=100){
+export function chunckText(text:string ,chunkSize=200, overlap=50){
     const words= text.split(/\s+/);
 
     const chuncks:string[]=[];

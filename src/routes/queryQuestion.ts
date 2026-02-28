@@ -18,11 +18,10 @@ router.post("/",async(req:Request , res:Response)=>{
         }
 
         const embeddedQuestion= await OllamaQuestionToEmbedded(question);
-
-        await askAi(embeddedQuestion);
-
         console.log("question embedding in /ask  route =", embeddedQuestion);
-        
+
+        const answer= await askAi(embeddedQuestion,question);
+        console.log("answer is = ", answer);
 
         res.status(200).json({message:"success!"});
     }catch(e){
