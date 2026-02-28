@@ -9,6 +9,7 @@ const router = Router();
 router.post("/",upload.single("file"),  async(req:Request, res:Response)=>{
     try{
         const file= req.file;
+        const {userId}=req.body;
 
         if (!file) {
             return res.status(400).json({ error: "No file uploaded" });
@@ -21,7 +22,7 @@ router.post("/",upload.single("file"),  async(req:Request, res:Response)=>{
 
         console.log("extracted text- ", text);
 
-        const response = await ingestChunk("docs", text, {
+        const response = await ingestChunk(userId,"docs", text, {
                                             source: "auth.pdf",
                                             page: 300,
                                         });

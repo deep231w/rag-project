@@ -3,6 +3,7 @@ import { embededText } from "../lib/embeding";
 import OllamaLocalEmbded from "../lib/OllamaLocalEmbed";
 import { chunckText } from "../lib/chunck";
 export async function ingestChunk(
+  userId:string,
   collection: string,
   text: string,
   payload: Record<string, any>
@@ -23,6 +24,7 @@ export async function ingestChunk(
             id: crypto.randomUUID(),
             vector,
             payload: {
+              userId,
               text,
               ...payload,
             },
