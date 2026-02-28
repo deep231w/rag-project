@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import  router from './routes/storeToDb';
 import {router as askQuestion} from './routes/queryQuestion';
-
+import { router as deletecollection } from './routes/deleteCollection';
 import { ensureCollection } from './lib/qdrant';
 import { json } from 'node:stream/consumers';
 const app = express();
@@ -14,6 +14,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use(express.json());
 app.use(("/upload"),router );
 app.use(("/ask"),askQuestion);
+app.use(("/deletecollection"), deletecollection);
 
 async function waitforEnsureCollection(retries=10) {
   for(let i=0; i<retries; i++){
