@@ -4,6 +4,7 @@ import {router as askQuestion} from './routes/queryQuestion';
 import { router as deletecollection } from './routes/deleteCollection';
 import { ensureCollection } from './lib/qdrant';
 import { json } from 'node:stream/consumers';
+import {conectMongo} from "../src/db/db";
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -32,6 +33,8 @@ async function waitforEnsureCollection(retries=10) {
 
 async function start(){
   await waitforEnsureCollection();
+  await conectMongo();
+  
   app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
