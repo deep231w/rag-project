@@ -6,6 +6,7 @@ import { route as adminAuth } from './routes/adminAuth';
 import { ensureCollection } from './lib/qdrant';
 import { json } from 'node:stream/consumers';
 import {conectMongo} from "../src/db/db";
+import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +15,7 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Hello, TypeScript + Express!');
 });
 
+app.use(cors())
 app.use(express.json());
 app.use(("/upload"),router );
 app.use(("/ask"),askQuestion);
