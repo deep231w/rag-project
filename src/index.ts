@@ -3,6 +3,7 @@ import  router from './routes/storeToDb';
 import {router as askQuestion} from './routes/queryQuestion';
 import { router as deletecollection } from './routes/deleteCollection';
 import { route as adminAuth } from './routes/adminAuth';
+import { router as botRoutr } from './routes/botRoutr';
 import { ensureCollection } from './lib/qdrant';
 import { json } from 'node:stream/consumers';
 import {conectMongo} from "../src/db/db";
@@ -21,6 +22,7 @@ app.use(("/upload"),router );
 app.use(("/ask"),askQuestion);
 app.use(("/deletecollection"), deletecollection);
 app.use(("/admin"), adminAuth);
+app.use(("/bot"), botRoutr);
 
 async function waitforEnsureCollection(retries=10) {
   for(let i=0; i<retries; i++){

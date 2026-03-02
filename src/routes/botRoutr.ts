@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { Bot } from "../models/botSchema";
 
-const router= Router();
+export const router= Router();
 
 router.post("/create",async(req:Request, res:Response)=>{
     try{
