@@ -58,3 +58,53 @@ route.post("/signup", async(req:Request, res:Response)=>{
         throw e
     }
 })
+
+route.post("/signin", async(req:Request, res:Response)=>{
+    try{
+        const {email ,password}=req.body;
+
+        if(!email || !password) {
+            res.status(400).json({message:"pleasse enter credentials!"});
+            return;
+        }
+
+        const admin = await Admin.findOne({email});
+
+        if(!admin){
+            res.status(404).json({
+                message:"admin not found"
+            })
+            return;
+        }
+
+        const isValid= await bcrypt.compare(password ,admin.password);
+
+        if(!isValid){
+            res.status(405).json({
+                message:"incorrect password"
+            })
+            return;
+        }
+
+        const payload={
+            userId:admin._id,
+            email:admin.email,
+            name:admin.name
+        }
+
+        if (!env.MY_JWT_SECRET) {
+            throw new Error("MY_JWT_SECRET is missing");
+        }
+        const token=jwt.sign(payload , env.MY_JWT_SECRET  , {expiresIn:'1h'});
+
+        res.status(200).json({
+            message:"user logged in successful",
+            admin:payload,
+            token:token
+        })
+
+    }catch(e){
+        console.log("error in admin signup route =", e);
+    }
+    
+})
