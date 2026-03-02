@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import bcrypt from 'bcryptjs';
-import { Admin } from "../model/adminSchema";
+import { Admin } from "../models/adminSchema";
 import jwt from 'jsonwebtoken';
 import { env } from "../config/env";
 
@@ -106,5 +106,5 @@ route.post("/signin", async(req:Request, res:Response)=>{
     }catch(e){
         console.log("error in admin signup route =", e);
     }
-    
+
 })
