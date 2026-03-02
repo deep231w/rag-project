@@ -1,8 +1,9 @@
 import { Request, Response, Router } from "express";
 import bcrypt from 'bcryptjs';
 import { Admin } from "../model/adminSchema";
+import jwt from 'jsonwebtoken';
 
-const route= Router();
+export const route= Router();
 
 route.post("/signup", async(req:Request, res:Response)=>{
     try{
@@ -28,6 +29,7 @@ route.post("/signup", async(req:Request, res:Response)=>{
             password:hashedPassword
         })
 
+        // const token;
         // if(!admin){
         //     res.status(403).json({message:"admin not created"})
         // }
@@ -36,7 +38,7 @@ route.post("/signup", async(req:Request, res:Response)=>{
             message:"admin created",
             admin:admin
         })
-        
+
     }catch(e){
         console.log("error in admin signup page: ", e);
         throw e
