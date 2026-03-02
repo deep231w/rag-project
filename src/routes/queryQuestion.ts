@@ -6,7 +6,7 @@ export const router= Router();
 
 router.post("/",async(req:Request , res:Response)=>{
     try{
-        const {question}=req.body;
+        const {question,botId}=req.body;
 
 
         console.log("question is -", question);
@@ -20,7 +20,8 @@ router.post("/",async(req:Request , res:Response)=>{
         const embeddedQuestion= await OllamaQuestionToEmbedded(question);
         console.log("question embedding in /ask  route =", embeddedQuestion);
 
-        const answer= await askAi(embeddedQuestion,question);
+        const answer= await askAi(embeddedQuestion,question, botId);
+        
         console.log("answer is = ", answer);
 
         res.status(200).json({message:"success!"});

@@ -2,11 +2,19 @@ import axios from "axios";
 import { qdrant } from "../lib/qdrant";
 import { OllamaQueryQuestion } from "../lib/ollamaForQuery";
 
-export default async function askAi(queryEmbedding:number[],question:string) {
+export default async function askAi(queryEmbedding:number[],question:string, botId:string) {
     const res= await qdrant.search("docs",{
         vector:queryEmbedding,
         limit:2,
-        with_payload:true
+        with_payload:true,
+        filter:{
+            must:[
+                {
+                    key:botId,
+                    match:true
+                }
+            ]
+        }
     })
 
     const context =  res.map(r=>((r.payload) as {text:string}).text).join("\n\n");
