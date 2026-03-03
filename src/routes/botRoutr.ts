@@ -35,3 +35,35 @@ router.post("/create",async(req:Request, res:Response)=>{
         res.status(500).json({message:"server error"});
     }
 })
+
+router.get("/getbotsdata", async(req:Request , res:Response)=>{
+    try{
+        const {adminId}=req.body;
+
+        if(!adminId){
+            res.status(400).json({message:"credentials misssing"});
+            return;
+        }
+
+        const bots= await Bot.find({adminId});
+        console.log("bots =" ,bots);
+
+        if(!bots){
+            res.status(404).json({
+                message:"you dont have any bots"
+            })
+            return;
+        }
+
+        res.status(200).json({
+            message:"bots fetched",
+            bots:bots
+        })
+        
+    }catch(e){
+        console.log("error in get bot data api-", e);
+        res.status(500).json({
+            message:"server error "
+        })
+    }
+})
