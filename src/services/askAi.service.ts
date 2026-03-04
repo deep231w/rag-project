@@ -5,13 +5,13 @@ import { OllamaQueryQuestion } from "../lib/ollamaForQuery";
 export default async function askAi(queryEmbedding:number[],question:string, botId:string) {
     const res= await qdrant.search("docs",{
         vector:queryEmbedding,
-        limit:2,
+        limit:5,
         with_payload:true,
         filter:{
             must:[
                 {
-                    key:botId,
-                    match:true
+                    key:"botId",
+                    match:{value:botId}
                 }
             ]
         }
@@ -22,7 +22,7 @@ export default async function askAi(queryEmbedding:number[],question:string, bot
 
 
     console.log("Context length:", context.length);
-    const answer= OllamaQueryQuestion(context ,question);
+    const answer= await OllamaQueryQuestion(context ,question);
     
     return answer;
 }

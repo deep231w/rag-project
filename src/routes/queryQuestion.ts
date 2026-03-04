@@ -10,7 +10,7 @@ router.post("/",async(req:Request , res:Response)=>{
 
 
         console.log("question is -", question);
-        if(!question) {
+        if(!question || !botId) {
             res.status(400).json({
                 message:"credential missing"
             })
@@ -24,7 +24,10 @@ router.post("/",async(req:Request , res:Response)=>{
         
         console.log("answer is = ", answer);
 
-        res.status(200).json({message:"success!"});
+        res.status(200).json({
+            message:"success!",
+            answer
+        });
     }catch(e){
         console.log("error in ask question api -", e);
         throw e;

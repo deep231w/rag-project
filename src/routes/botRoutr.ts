@@ -38,7 +38,7 @@ router.post("/create",async(req:Request, res:Response)=>{
 
 router.get("/getbotsdata", async(req:Request , res:Response)=>{
     try{
-        const {adminId}=req.body;
+        const {adminId}=req.query;
 
         if(!adminId){
             res.status(400).json({message:"credentials misssing"});
@@ -59,7 +59,7 @@ router.get("/getbotsdata", async(req:Request , res:Response)=>{
             message:"bots fetched",
             bots:bots
         })
-        
+
     }catch(e){
         console.log("error in get bot data api-", e);
         res.status(500).json({

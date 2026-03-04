@@ -11,8 +11,8 @@ router.post("/",upload.single("file"),  async(req:Request, res:Response)=>{
         const file= req.file;
         const {adminId,botId}=req.body;
 
-        if (!file) {
-            return res.status(400).json({ error: "No file uploaded" });
+        if (!file || !adminId || !botId) {
+            return res.status(400).json({ error: "credential missing" });
         }
 
         const text =  await extractText(file.path)
@@ -22,7 +22,7 @@ router.post("/",upload.single("file"),  async(req:Request, res:Response)=>{
 
         console.log("extracted text- ", text);
 
-        const response = await ingestChunk(adminId, botId,"docs", text, {
+        const response = await ingestChunk(botId, adminId,"docs", text, {
                                             source: "auth.pdf",
                                             page: 300,
                                         });

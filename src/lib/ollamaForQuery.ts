@@ -20,6 +20,8 @@ export async function OllamaQueryQuestion(context:string, question:string){
 
         console.log("response of query question to ollama- ", res);
 
+        return res.data.response;
+
     }catch(e){
         console.log("error during query to ollama - ",e );
     }
