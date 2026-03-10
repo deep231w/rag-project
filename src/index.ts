@@ -8,6 +8,7 @@ import { ensureCollection } from './lib/qdrant';
 import { json } from 'node:stream/consumers';
 import {conectMongo} from "../src/db/db";
 import cors from 'cors';
+import { redis } from './redis';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +42,9 @@ async function waitforEnsureCollection(retries=10) {
 async function start(){
   await waitforEnsureCollection();
   await conectMongo();
+  await redis.connect();
+
+  redis.on("connect",()=>console.log("redis connected !!"))
   
   app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);

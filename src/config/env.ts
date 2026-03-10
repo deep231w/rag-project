@@ -6,5 +6,6 @@ export  const env= {
     EMBEDDING_MODEL: process.env.EMBEDDING_MODEL!,
     OLLAMA_URL:process.env.OLLAMA_URL,
     LOCAL_MONGODB_URI:process.env.LOCAL_MONGODB_URI,
-    MY_JWT_SECRET:process.env.MY_JWT_SECRET
+    MY_JWT_SECRET:process.env.MY_JWT_SECRET,
+    REDIS_URL:process.env.REDIS_URL
 }

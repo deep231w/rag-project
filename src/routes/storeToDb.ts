@@ -11,6 +11,7 @@ router.post("/",upload.single("file"),  async(req:Request, res:Response)=>{
         const file= req.file;
         const {adminId,botId}=req.body;
 
+        
         if (!file || !adminId || !botId) {
             return res.status(400).json({ error: "credential missing" });
         }
