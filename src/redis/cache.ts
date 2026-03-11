@@ -5,7 +5,9 @@ export async function SetCache(key:string , value:any , ttl=3600){
         const res= await redis.set(key , JSON.stringify(value) ,{
             EX:ttl
         })
+        
         console.log("redis set res- ", res);
+        return res;
     }catch(e){
         console.log("ERROR IN SET CACHE IN REDIS:",e);
         throw e;
@@ -29,7 +31,7 @@ export async function DeleteCache(key:string) {
     try{
         const res= await redis.del(key);
         console.log("deleted data res - ", res);
-        
+
     }catch(e){
         console.log("error in delete cache from redis -", e);
         throw e;
