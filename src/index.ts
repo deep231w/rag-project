@@ -8,7 +8,7 @@ import { ensureCollection } from './lib/qdrant';
 import { json } from 'node:stream/consumers';
 import {conectMongo} from "../src/db/db";
 import cors from 'cors';
-import { redis } from './redis';
+import { redis } from './redis/redis';
 
 const app = express();
 const PORT = process.env.PORT || 3000;

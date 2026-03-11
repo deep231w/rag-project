@@ -17,6 +17,9 @@ router.post("/",async(req:Request , res:Response)=>{
             return;
         }
 
+        //1: reidis cache the question =>
+        
+
         const embeddedQuestion= await OllamaQuestionToEmbedded(question);
         console.log("question embedding in /ask  route =", embeddedQuestion);
 
