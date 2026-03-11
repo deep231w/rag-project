@@ -1,50 +1,48 @@
 import crypto from "crypto";
 import { SetCache } from "./cache";
 
-export async function MultipleTypeQuestionCache(question:string,embeddedQuestion:any ,answer:any  ,botId:string){
+//caching
+export async function MultipleTypeQuestionCache(question:string ,answer:any  ,botId:string){
     console.log("question inside multiplecache func- ", question);
 
     //cache hashed question
-    const hashedq= hashQuestion(question);
-    if(hashedq) console.log("questioned hashed ..");
-    const hkey= `rag:${botId}:qhash:${hashedq}`;
+    const hkey= hashQuestion(question ,botId);
     const hashedRedisCache = await SetCache(hkey ,answer );
     if(hashedRedisCache) console.log("hashedquestion cached ...");
 
     //polish the question then add in id to cache
-    const normq= normlizedQuestion(question);
-    if(normq) console.log("question normalised .....- ",normq);
-    const normlzqKey= `rag:${botId}:qnormlz:${normq}`;
-    const normalisedRedisCache= await SetCache(normlzqKey , answer);
+    const normq= normlizedQuestion(question ,botId);
+    const normalisedRedisCache= await SetCache(normq , answer);
     if(normalisedRedisCache) console.log("cached normalised question.....");
 
-    //vectorised cache
-
-
-
-
 }
 
 
-function hashQuestion(q:string){
+function hashQuestion(q:string ,botId:string){
     const hashedQ= crypto.createHash("sha256").update(q).digest("hex");
+    if(hashedQ) console.log("questioned hashed ..");
+    const hkey= `rag:${botId}:qhash:${hashedQ}`;
     
-    return hashedQ;
+    return hkey;
 }
 
 
-function normlizedQuestion(q:string){
+function normlizedQuestion(q:string , botId:string){
     const normlzq =  q
                     .toLowerCase()
                     .replace(/[^\w\s]/g, "")
                     .replace(/\s+/g, " ")
                     .trim();
     const normlzhashedq= crypto.createHash("sha256").update(normlzq).digest("hex");
+    if(normlzhashedq) console.log("question normalised .....- ",normlzhashedq);
+    const normq= `rag:${botId}:qnormlz:${normlzhashedq}`;
 
-    return normlzhashedq;
+
+    return normq;
 
 }
 
-function VectoriseCache(q:string){
+//check caching
+export async function CheckCaching(question:string,botId:string) {
     
 }

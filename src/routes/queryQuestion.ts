@@ -18,6 +18,9 @@ router.post("/",async(req:Request , res:Response)=>{
             return;
         }
 
+        //2:redis cache checking from redis =>
+        
+
         const embeddedQuestion= await OllamaQuestionToEmbedded(question);
         console.log("question embedding in /ask  route =", embeddedQuestion);
 
@@ -25,8 +28,9 @@ router.post("/",async(req:Request , res:Response)=>{
         console.log("answer is = ", answer);
 
         //1: redis cache the question =>
-        const cachedq = await MultipleTypeQuestionCache(question , embeddedQuestion ,answer , botId);
+        const cachedq = await MultipleTypeQuestionCache(question ,answer , botId);
 
+        
 
 
 
