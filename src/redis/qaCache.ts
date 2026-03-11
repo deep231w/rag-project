@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { SetCache } from "./cache";
+import { GetCache, SetCache } from "./cache";
 
 //caching
 export async function MultipleTypeQuestionCache(question:string ,answer:any  ,botId:string){
@@ -43,6 +43,31 @@ function normlizedQuestion(q:string , botId:string){
 }
 
 //check caching
-export async function CheckCaching(question:string,botId:string) {
+export async function CheckHashedCaching(question:string,botId:string) {
     
+    try{
+        const key= hashQuestion(question ,botId);
+        const ans= await GetCache(key);
+        console.log("ans in get hashed caching -", ans);
+
+        return ans;
+
+    }catch(e){
+        console.log("error in check cache- ", e);
+        throw e;
+    }
+}
+
+//normalised cache checking 
+export async function NormalisedCacheChecking(question:string,botId:string) {
+    try{
+        const key= normlizedQuestion(question ,botId);
+        const ans = await GetCache(key);
+
+        return ans;
+        
+    }catch(e){
+        console.log("error in normalised cache check - ", e);
+        throw e;
+    }
 }
