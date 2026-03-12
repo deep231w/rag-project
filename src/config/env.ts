@@ -7,5 +7,6 @@ export  const env= {
     OLLAMA_URL:process.env.OLLAMA_URL,
     LOCAL_MONGODB_URI:process.env.LOCAL_MONGODB_URI,
     MY_JWT_SECRET:process.env.MY_JWT_SECRET,
-    REDIS_URL:process.env.REDIS_URL
+    REDIS_URL:process.env.REDIS_URL,
+    QDRANT_VECTORDB_URL:process.env.QDRANT_VECTORDB_URL
 }
