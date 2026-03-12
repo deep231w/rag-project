@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import OllamaQuestionToEmbedded from "../lib/ollamaQembedded";
 import askAi from "../services/askAi.service";
 import { CheckHashedCaching, MultipleTypeQuestionCache, NormalisedCacheChecking } from "../redis/qaCache";
+import { CacheSemantic } from "../semanticCache/semanticCache";
 
 export const router= Router();
 
@@ -56,6 +57,9 @@ router.post("/",async(req:Request , res:Response)=>{
         //1: redis cache the question =>
         const cachedq = await MultipleTypeQuestionCache(question ,answer , botId);
 
+        //semantic cache 1=>
+        const semanticCached= await CacheSemantic(botId , question , answer);
+        
 
 
 
