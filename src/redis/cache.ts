@@ -3,7 +3,7 @@ import { redis } from "./redis";
 export async function SetCache(key:string , value:any , ttl=3600){
     try{
         const res= await redis.set(key , JSON.stringify(value) ,{
-            EX:ttl
+            EX:60 * 60 * 24
         })
         
         console.log("redis set res- ", res);
