@@ -58,8 +58,8 @@ router.post("/",async(req:Request , res:Response)=>{
         const cachedq = await MultipleTypeQuestionCache(question ,answer , botId);
 
         //semantic cache 1=>
-        const semanticCached= await CacheSemantic(botId , question , answer);
-        
+        const semanticCached= await CacheSemantic(botId , question , answer ,embeddedQuestion);
+
 
 
 
