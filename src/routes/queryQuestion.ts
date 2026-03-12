@@ -3,6 +3,7 @@ import OllamaQuestionToEmbedded from "../lib/ollamaQembedded";
 import askAi from "../services/askAi.service";
 import { CheckHashedCaching, MultipleTypeQuestionCache, NormalisedCacheChecking } from "../redis/qaCache";
 import { CacheSemantic } from "../semanticCache/semanticCache";
+import { checkSemanticCache } from "../services/checkSemantic.service";
 
 export const router= Router();
 
@@ -47,8 +48,21 @@ router.post("/",async(req:Request , res:Response)=>{
             console.log("normalised cache missed =================================");
         }
         
-
         const embeddedQuestion= await OllamaQuestionToEmbedded(question);
+        //check semantic cache 
+        const semanticCacheHit= await checkSemanticCache(botId ,embeddedQuestion);
+
+        if(semanticCacheHit){
+            console.log("semantic cache hit in quesry route",semanticCacheHit);
+            return res.status(200).json({
+                message:"success!",
+                answer:semanticCacheHit
+            })
+        }else{
+            console.log("semantic cache missed =================================");
+        }
+
+        
         console.log("question embedding in /ask  route =", embeddedQuestion);
 
         const answer= await askAi(embeddedQuestion,question, botId);
