@@ -1,7 +1,7 @@
 import { Router , Request  ,Response} from "express";
-import { ingestChunk } from "../services/ingent.service";
+import { ingestChunk } from "../../services/ingent.service";
 import multer from "multer";
-import extractText from "../lib/extractTextFromPdf";
+import extractText from "../../lib/extractTextFromPdf";
 
 const upload =multer({dest:"uploads/"})
 const router = Router();

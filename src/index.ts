@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import  router from './routes/storeToDb';
+import  router from './routes/fileHandler/storeToDb';
 import {router as askQuestion} from './routes/queryQuestion';
 import { router as deletecollection } from './routes/deleteCollection';
 import { route as adminAuth } from './routes/adminAuth';
@@ -9,6 +9,8 @@ import { json } from 'node:stream/consumers';
 import {conectMongo} from "../src/db/db";
 import cors from 'cors';
 import { redis } from './redis/redis';
+import { createRouteHandler } from 'uploadthing/express';
+import { UploadRouter } from './routes/fileHandler/uploadFile';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +26,11 @@ app.use(("/ask"),askQuestion);
 app.use(("/deletecollection"), deletecollection);
 app.use(("/admin"), adminAuth);
 app.use(("/bot"), botRoutr);
+
+//file uploadthing router
+app.use("/api/uploadthing",createRouteHandler({
+  router:UploadRouter
+}))
 
 async function waitforEnsureCollection(retries=10) {
   for(let i=0; i<retries; i++){
