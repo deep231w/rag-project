@@ -1,6 +1,6 @@
 # RAG Project
 
-A Retrieval-Augmented Generation (RAG) backend system with caching and database support.
+A Retrieval-Augmented Generation (RAG) backend system with **multi-layer caching** and database support.
 
 ---
 
@@ -8,10 +8,11 @@ A Retrieval-Augmented Generation (RAG) backend system with caching and database 
 
 This project uses the following stack:
 
-* **MongoDB** → Main database
-* **Mongo Express** → Web UI for MongoDB
-* **Redis** → Caching layer
-* **Docker Compose** → Local development environment
+- **MongoDB** → Main database  
+- **Mongo Express** → Web UI for MongoDB  
+- **Redis** → Fast caching layer (exact + normalized)  
+- **Qdrant** → Vector database for semantic caching  
+- **Docker Compose** → Local development environment  
 
 ---
 
@@ -21,16 +22,16 @@ This project uses **Mongo Express**, a web-based GUI for MongoDB running locally
 
 It allows you to:
 
-* Inspect collections
-* View documents
-* Edit database records
-* Debug stored data easily
+- Inspect collections  
+- View documents  
+- Edit database records  
+- Debug stored data easily  
 
 ---
 
 # Running the Project (Local Development)
 
-Start the full stack using Docker Compose.
+Start the full stack using Docker Compose:
 
 ```bash
 docker compose up --build --watch
@@ -38,57 +39,55 @@ docker compose up --build --watch
 
 This will start:
 
-* Application server
-* MongoDB
-* Mongo Express
-* Redis
+- Application server  
+- MongoDB  
+- Mongo Express  
+- Redis  
+- Qdrant  
 
 ---
 
 # Caching Strategy
 
-The project uses **Redis** to cache responses for previously asked questions.
+The project uses a **3-layer caching system** to optimize performance and reduce LLM calls:
 
-Two caching techniques are implemented:
-
-1. **Hash-based caching**
-2. **Normalized question caching**
+1. **Hash-based caching (Redis)**  
+2. **Normalized question caching (Redis)**  
+3. **Semantic caching (Qdrant)**  
 
 ---
 
-# 1. Hash-Based Cache
+# 1. Hash-Based Cache (Redis)
 
 A SHA-256 hash of the raw question is used as the cache key.
 
-This ensures **exact question match caching**.
+## Purpose
 
-### Example
+- Exact match caching  
+- Fastest lookup  
+
+## Example
 
 ```ts
 const hashedq = hashQuestion(question);
-if (hashedq) console.log("question hashed..");
 
 const hkey = `rag:${botId}:qhash:${hashedq}`;
 
-const hashedRedisCache = await SetCache(hkey, answer);
-
-if (hashedRedisCache) console.log("hashed question cached...");
+await SetCache(hkey, answer);
 ```
 
-### Hash Function
+## Hash Function
 
 ```ts
 function hashQuestion(q: string) {
-  const hashedQ = crypto
+  return crypto
     .createHash("sha256")
     .update(q)
     .digest("hex");
-
-  return hashedQ;
 }
 ```
 
-Example Redis Key:
+## Example Key
 
 ```
 rag:bot123:qhash:ab3429f9c83a...
@@ -96,33 +95,29 @@ rag:bot123:qhash:ab3429f9c83a...
 
 ---
 
-# 2. Normalized Question Cache
+# 2. Normalized Question Cache (Redis)
 
-To improve cache hits, the question is **normalized** before hashing.
+Improves cache hits by normalizing the question before hashing.
 
-Normalization steps:
+## Normalization Steps
 
-* Convert to lowercase
-* Remove punctuation
-* Collapse multiple spaces
-* Trim whitespace
-* Hash the normalized text
+- Lowercase conversion  
+- Remove punctuation  
+- Collapse spaces  
+- Trim whitespace  
+- Hash normalized text  
 
-### Example
+## Example
 
 ```ts
 const normq = normlizedQuestion(question);
 
-if (normq) console.log("question normalized...", normq);
-
 const normlzqKey = `rag:${botId}:qnormlz:${normq}`;
 
-const normalisedRedisCache = await SetCache(normlzqKey, answer);
-
-if (normalisedRedisCache) console.log("cached normalized question...");
+await SetCache(normlzqKey, answer);
 ```
 
-### Normalization Function
+## Normalization Function
 
 ```ts
 function normlizedQuestion(q: string) {
@@ -132,16 +127,14 @@ function normlizedQuestion(q: string) {
     .replace(/\s+/g, " ")
     .trim();
 
-  const normlzhashedq = crypto
+  return crypto
     .createHash("sha256")
     .update(normlzq)
     .digest("hex");
-
-  return normlzhashedq;
 }
 ```
 
-Example Redis Key:
+## Example Key
 
 ```
 rag:bot123:qnormlz:98a2bca1a42...
@@ -149,34 +142,102 @@ rag:bot123:qnormlz:98a2bca1a42...
 
 ---
 
-# Why Two Caches?
+# 3. Semantic Cache (Qdrant)
 
-### Hash Cache
+This layer enables **meaning-based caching** using vector embeddings.
 
-Fast lookup for **exact repeated questions**
+Instead of matching exact text, it matches **semantic similarity**.
 
-Example:
+---
 
-```
-"What is RAG?"
-"What is RAG?"
+## How It Works
+
+### Step 1: Convert Question → Embedding
+
+```ts
+const embeddedQuestion = await OllamaQuestionToEmbedded(question);
 ```
 
 ---
 
-### Normalized Cache
+### Step 2: Check Semantic Cache
 
-Handles **small variations**
+```ts
+const res = await qdrant.search("qa_cache", {
+  vector: embedding,
+  limit: 1,
+  filter: {
+    must: [
+      {
+        key: "botId",
+        match: { value: botId }
+      }
+    ]
+  }
+});
+```
 
-Example:
+---
+
+### Step 3: Similarity Threshold
+
+```ts
+if (res.length && res[0].score > 0.92) {
+  return res[0]?.payload?.answer;
+}
+```
+
+---
+
+### Step 4: Store in Semantic Cache
+
+```ts
+await qdrant.upsert("qa_cache", {
+  points: [
+    {
+      id: crypto.randomUUID(),
+      vector: embeddedQuestion,
+      payload: {
+        botId,
+        question,
+        answer
+      }
+    }
+  ]
+});
+```
+
+---
+
+## Why Semantic Cache?
+
+Handles different phrasing with same meaning.
+
+### Example
 
 ```
 "What is RAG?"
-"what is rag"
-"What is rag??"
+"Explain retrieval augmented generation"
+"Tell me about RAG architecture"
 ```
 
-All normalize to the same key.
+---
+
+# Request Flow
+
+When a user asks a question:
+
+```
+1. Check Hash Cache (Redis)
+2. Check Normalized Cache (Redis)
+3. Generate Embedding
+4. Check Semantic Cache (Qdrant)
+5. Call LLM (if all miss)
+6. Store result in:
+   - Hash Cache
+   - Normalized Cache
+   - Semantic Cache
+```
 
 ---
 
@@ -187,19 +248,48 @@ rag:{botId}:qhash:{hash}
 rag:{botId}:qnormlz:{hash}
 ```
 
-Example:
+---
+
+# Qdrant Collection
 
 ```
-rag:bot42:qhash:abcdef123
-rag:bot42:qnormlz:9981abcc
+Collection: qa_cache
 ```
+
+## Stored Payload
+
+```json
+{
+  "botId": "bot123",
+  "question": "What is RAG?",
+  "answer": "..."
+}
+```
+
+---
+
+# Performance Tradeoff
+
+| Cache Layer        | Speed ⚡ | Accuracy 🎯 | Use Case |
+|-------------------|--------|------------|----------|
+| Hash Cache        | Very High | Exact only | Same question |
+| Normalized Cache  | High | Medium | Slight variation |
+| Semantic Cache    | Medium | High | Meaning-based |
 
 ---
 
 # Development Notes
 
-* Redis is used only for **question → answer caching**
-* MongoDB stores the main application data
-* Docker Compose manages all services locally
+- Redis → ultra-fast lookup caching  
+- Qdrant → semantic similarity search  
+- MongoDB → persistent data storage  
+- Similarity threshold (`0.92`) can be tuned  
 
 ---
+
+# Future Improvements
+
+- Add TTL to Redis keys  
+- Use top-k semantic matches instead of 1  
+- Cache embeddings to avoid recomputation  
+- Add metrics/logging for cache hit rates  

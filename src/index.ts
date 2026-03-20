@@ -13,13 +13,16 @@ import { createRouteHandler } from 'uploadthing/express';
 import { UploadRouter } from './routes/fileHandler/uploadFile';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.get('/', (req: Request, res: Response) => {
   res.send('Hello, TypeScript + Express!');
 });
 
-app.use(cors())
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}))
 app.use(express.json());
 app.use(("/upload"),router );
 app.use(("/ask"),askQuestion);
@@ -53,10 +56,9 @@ async function start(){
 
   redis.on("connect",()=>console.log("redis connected !!"))
   
-  app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running at http://localhost:${PORT}`);
-});
-}
+});}
 
 start();
 
