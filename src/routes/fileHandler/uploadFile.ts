@@ -3,7 +3,8 @@ import  z  from "zod";
 
 const f = createUploadthing<{
   pdfUploader: {
-    input: { botId: string };
+    input: { botId: string ,adminId:string};
+
   };
 }>();
 
@@ -17,13 +18,20 @@ export const UploadRouter: FileRouter = {
     .input(
       z.object({
         botId: z.string(),
+        adminId:z.string()
       })
     )
-    .onUploadComplete(async (data) => {
+    .middleware(async({input})=>{
+        return{
+            botId:input.botId,
+            adminId:input.adminId
+        }
+    })
+    .onUploadComplete(async ({file ,metadata}) => {
         //   if (!metadata) throw new Error("missing metadata");
 
-        //   console.log("file url-", file.ufsUrl);
-        //   console.log("botId =", metadata.botId);
-        console.log("data in upload thing -" ,data);
+          console.log("file url-", file.ufsUrl);
+          console.log("botId =", metadata.botId);
+        
     }),
 };

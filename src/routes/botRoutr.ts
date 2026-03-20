@@ -36,11 +36,16 @@ router.post("/create",async(req:Request, res:Response)=>{
     }
 })
 
+        
 router.get("/getbotsdata", async(req:Request , res:Response)=>{
     try{
-        const {adminId}=req.query;
+        let {adminId}=req.query;
+        
+        if(Array.isArray(adminId)){
+            adminId=adminId[0];
+        }
 
-        if(!adminId){
+        if(!adminId || typeof adminId !== "string"){
             res.status(400).json({message:"credentials misssing"});
             return;
         }
@@ -61,9 +66,9 @@ router.get("/getbotsdata", async(req:Request , res:Response)=>{
         })
 
     }catch(e){
-        console.log("error in get bot data api-", e);
-        res.status(500).json({
-            message:"server error "
-        })
+            console.log("error in get bot data api-", e);
+            res.status(500).json({
+                message:"server error "
+            })
     }
 })

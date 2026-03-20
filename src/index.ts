@@ -19,21 +19,28 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Hello, TypeScript + Express!');
 });
 
+// app.options("*", cors());
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "*",
+  methods: "*",
+  allowedHeaders:"*",
   credentials: true
+}));
+
+//file uploadthing router
+app.use("/api/uploadthing",createRouteHandler({
+  router:UploadRouter
 }))
+
 app.use(express.json());
+
 app.use(("/upload"),router );
 app.use(("/ask"),askQuestion);
 app.use(("/deletecollection"), deletecollection);
 app.use(("/admin"), adminAuth);
 app.use(("/bot"), botRoutr);
 
-//file uploadthing router
-app.use("/api/uploadthing",createRouteHandler({
-  router:UploadRouter
-}))
+
 
 async function waitforEnsureCollection(retries=10) {
   for(let i=0; i<retries; i++){
