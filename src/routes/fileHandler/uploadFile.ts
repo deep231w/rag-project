@@ -1,5 +1,6 @@
 import { createUploadthing, type FileRouter } from "uploadthing/express";
 import  z  from "zod";
+import { Bot } from "../../models/botSchema";
 
 const f = createUploadthing<{
   pdfUploader: {
@@ -28,10 +29,34 @@ export const UploadRouter: FileRouter = {
         }
     })
     .onUploadComplete(async ({file ,metadata}) => {
-        //   if (!metadata) throw new Error("missing metadata");
+        try{
+          const {botId}=metadata;
 
-          console.log("file url-", file.ufsUrl);
-          console.log("botId =", metadata.botId);
+          if(!botId){
+            console.log("botId missing in uploadFile on uploadcomplete handler")
+            return;
+          }
+
+          await Bot.findByIdAndUpdate(
+            botId,
+            {
+              $push:{
+                files:{
+                  name:file.name,
+                  url:file.ufsUrl,
+                  size:file.size,
+                  type:file.type
+                }
+              }
+            },
+            {new:true}
+          )
+
+          console.log("file updated in bot !!");
+          
+        }catch(e){
+          console.log("error in file push to bot schema ");
+        }
         
     }),
 };

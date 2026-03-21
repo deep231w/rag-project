@@ -9,6 +9,7 @@ const botSchema= new mongoose.Schema(
                 name:{type:String , require:true},
                 url:{type:String ,require:true},
                 type:String,
+                size:String,
                 uploadedAt:{type:Date ,default :Date.now()}
             }
         ]
