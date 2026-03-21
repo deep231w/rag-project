@@ -49,13 +49,13 @@ export const UploadRouter: FileRouter = {
                 }
               }
             },
-            {new:true}
+            {returnDocument:'after'}
           )
 
           console.log("file updated in bot !!");
-          
+
         }catch(e){
-          console.log("error in file push to bot schema ");
+          console.log("error in file push to bot schema ",e);
         }
         
     }),
