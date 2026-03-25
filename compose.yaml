@@ -4,7 +4,9 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - .env
+      - .env.docker
+    environment:
+      - NODE_ENV=docker
     develop:
       watch:
         - path: .
@@ -15,6 +17,7 @@ services:
         - action: sync+restart
           path: index.ts
           target: /src
+    restart: unless-stopped
     depends_on:
       - qdrant
       - ollama
