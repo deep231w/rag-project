@@ -29,21 +29,53 @@ It allows you to:
 
 ---
 
-# Running the Project (Local Development)
+# Running the Project
 
-Start the full stack using Docker Compose:
+---
 
+## 🖥️ Local Setup (Application runs locally, services in Docker)
+
+### 1. Setup environment
+```bash
+cp .env.local.example .env.local
+```
+
+### 2. Start services
+```bash
+docker compose up --build
+```
+
+### 3. Stop API container
+```bash
+docker stop rag-project-api-1
+```
+
+### 4. Run application locally
+```bash
+npm run dev
+```
+
+---
+
+## 🐳 Docker Setup (Full containerized environment)
+
+### 1. Setup environment
+```bash
+cp .env.docker.example .env.docker
+```
+
+### 2. Start application and services
 ```bash
 docker compose up --build --watch
 ```
 
-This will start:
-
+### Services started
 - Application server  
 - MongoDB  
 - Mongo Express  
 - Redis  
 - Qdrant  
+- Ollama  
 
 ---
 
