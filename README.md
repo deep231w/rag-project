@@ -42,7 +42,7 @@ cp .env.local.example .env.local
 
 ### 2. Start services
 ```bash
-docker compose up --build
+docker compose up --build --watch
 ```
 
 ### 3. Stop API container
