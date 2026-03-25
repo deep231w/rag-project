@@ -42,22 +42,22 @@ app.use(("/bot"), botRoutr);
 
 
 
-async function waitforEnsureCollection(retries=10) {
-  for(let i=0; i<retries; i++){
-    try{
-      await ensureCollection();
-      return;
-    }catch(e){
-      console.log("waiting for qdrant ensulecollection ...")
-      await new Promise(r=> setTimeout(r, 2000));
-    }
-    console.log("collection ensured");
-
-  }
-}
+// async function waitforEnsureCollection(retries=10) {
+//   for(let i=0; i<retries; i++){
+//     try{
+//       await ensureCollection();
+//       console.log("collection ensured");
+//       return;
+//     }catch(e){
+//       console.log("waiting for qdrant ensulecollection ...")
+//       await new Promise(r=> setTimeout(r, 2000));
+//     }
+//   }
+// }
 
 async function start(){
-  await waitforEnsureCollection();
+  // await waitforEnsureCollection();
+  await ensureCollection();
   await conectMongo();
   await redis.connect();
 

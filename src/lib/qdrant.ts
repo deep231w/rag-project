@@ -1,7 +1,8 @@
 import { QdrantClient } from "@qdrant/js-client-rest";
+import { env } from "../config/env";
 
 export const qdrant = new QdrantClient({
-  url: "http://qdrant:6333",
+  url: env.QDRANT_VECTORDB_URL,
   checkCompatibility: false,
 
 });
