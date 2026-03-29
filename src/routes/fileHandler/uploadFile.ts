@@ -3,6 +3,7 @@ import  z  from "zod";
 import { Bot } from "../../models/botSchema";
 import extractText from "../../lib/extractTextFromPdf";
 import { ingestChunk } from "../../services/ingent.service";
+import mongoose from "mongoose";
 
 const f = createUploadthing<{
   pdfUploader: {
@@ -47,20 +48,27 @@ export const UploadRouter: FileRouter = {
             return;
           }
 
-          await Bot.findByIdAndUpdate(
+          const newFile = {
+            _id: new mongoose.Types.ObjectId(),
+            name: file.name,
+            url: file.ufsUrl,
+            size: file.size,
+            type: file.type,
+            uploadedAt: new Date(),
+          };
+
+          const fileUploaded =await Bot.findByIdAndUpdate(
             botId,
             {
               $push:{
-                files:{
-                  name:file.name,
-                  url:file.ufsUrl,
-                  size:file.size,
-                  type:file.type
-                }
+                files:newFile
               }
             },
             {returnDocument:'after'}
           )
+
+          console.log("file uploaded db res-", fileUploaded);
+          console.log("file new file =", newFile);
 
           //after upload
           const text =  await extractText(file.ufsUrl)
@@ -69,6 +77,7 @@ export const UploadRouter: FileRouter = {
           const response = await ingestChunk(botId, adminId,"docs", text, {
                                               source: file.name,
                                               page: 300,
+                                              fileId:newFile._id
                                           });
   
           console.log("response of ingest chunk -", response);
