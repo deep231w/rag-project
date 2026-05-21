@@ -39,6 +39,7 @@ app.use(("/ask"),askQuestion);
 app.use(("/deletecollection"), deletecollection);
 app.use(("/admin"), adminAuth);
 app.use(("/bot"), botRoutr);
+//files
 
 
 

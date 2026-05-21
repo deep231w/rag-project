@@ -1,3 +1,5 @@
+//THIS IS OLD ONE . NOW ITS IN ./uploadFile.ts for upload to cloud and extract text and convert to insgent chunk and convert to embedded and upload to vector db ;
+
 import { Router , Request  ,Response} from "express";
 import { ingestChunk } from "../../services/ingent.service";
 import multer from "multer";
