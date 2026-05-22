@@ -1,11 +1,17 @@
 import { QdrantClient } from "@qdrant/js-client-rest";
 import { env } from "../config/env";
 
-export const qdrant = new QdrantClient({
+const config: ConstructorParameters<typeof QdrantClient>[0] = {
   url: env.QDRANT_VECTORDB_URL,
   checkCompatibility: false,
+};
 
-});
+if (env.QDRANT_API_KEY) {
+  config.apiKey = env.QDRANT_API_KEY;
+}
+
+export const qdrant = new QdrantClient(config);
+
 
 export async function ensureCollection() {
   const collection= await qdrant.getCollections();

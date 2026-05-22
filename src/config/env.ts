@@ -17,7 +17,9 @@ export  const env= {
     LOCAL_MONGODB_URI:process.env.LOCAL_MONGODB_URI,
     MY_JWT_SECRET:process.env.MY_JWT_SECRET,
     REDIS_URL:process.env.REDIS_URL,
-    QDRANT_VECTORDB_URL:process.env.QDRANT_VECTORDB_URL
+
+    QDRANT_VECTORDB_URL:process.env.QDRANT_VECTORDB_URL,
+    QDRANT_API_KEY:process.env.QDRANT_API_KEY
 }
 
 
