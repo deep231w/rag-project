@@ -1,3 +1,3 @@
 export interface LlmProvider{
-    generate(prompt:string , botId:number):Promise<string>
+    generate(question:string , context:string):Promise<string>
 }

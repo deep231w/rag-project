@@ -4,10 +4,21 @@ import { OllamaLlmProvider } from "./llm/ollama";
 import { OpenaiLlmProvider } from "./llm/OpenAI";
 import { LlmProvider } from "./LlmProvider";
 
-export function getLLMProvider(type: string): LlmProvider {
+interface ProviderConfig {
+  apiKey?: string;
+  model?: string;
+}
+
+export function getLLMProvider(type: string , config:ProviderConfig): LlmProvider {
   switch (type) {
     case "gemini":
-      return new GeminiLlmProvider();
+      if (!config.apiKey || !config.model) {
+        throw new Error(" API config require !!!");
+      }
+      return new GeminiLlmProvider({
+        apiKey:config.apiKey,
+        model:config.model
+      });
 
     case "ollama":
       return new OllamaLlmProvider();
@@ -16,7 +27,15 @@ export function getLLMProvider(type: string): LlmProvider {
       return new BaseLlmProvider();
     
     case "openai":
-      return new OpenaiLlmProvider();
+      if (!config.apiKey || !config.model) {
+        throw new Error(" API config require !!!");
+      }
+
+      return new OpenaiLlmProvider({
+        apiKey:config.apiKey,
+        model:config.model
+      });
+
 
     default:
       throw new Error("Unsupported provider");
