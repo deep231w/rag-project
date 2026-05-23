@@ -1,6 +1,4 @@
-import axios from "axios";
 import { EmbeddedProvider } from "../EmbeddedProvider";
-import { env } from "../../config/env";
 import { GoogleGenAI } from "@google/genai";
 
 interface ModuleConfig{
