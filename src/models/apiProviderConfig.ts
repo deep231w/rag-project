@@ -10,7 +10,7 @@ const apiProviderSchema = new mongoose.Schema(
             enum: ["gemini", "openai", "ollama"],
             require :true
         },
-        llmMpiKey:{type:String , require :true},
+        llmApiKey:{type:String , require :true},
         llmModel:{type:String , require: true},
 
         embeddedProvider:{

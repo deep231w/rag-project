@@ -4,16 +4,19 @@ import askAi from "../services/askAi.service";
 import { CheckHashedCaching, MultipleTypeQuestionCache, NormalisedCacheChecking } from "../redis/qaCache";
 import { CacheSemantic } from "../semanticCache/semanticCache";
 import { checkSemanticCache } from "../services/checkSemantic.service";
+import { ApiProviderConfig } from "../models/apiProviderConfig";
+import { GetEmbeddedProvider } from "../providers/GetEmbeddedProvider";
+import { env } from "../config/env";
 
 export const router= Router();
 
 router.post("/",async(req:Request , res:Response)=>{
     try{
-        const {question,botId}=req.body;
+        const {question,botId , adminId}=req.body;
 
 
         console.log("question is -", question);
-        if(!question || !botId) {
+        if(!question || !botId || !adminId) {
             res.status(400).json({
                 message:"credential missing"
             })
@@ -48,7 +51,39 @@ router.post("/",async(req:Request , res:Response)=>{
             console.log("normalised cache missed =================================");
         }
         
-        const embeddedQuestion= await OllamaQuestionToEmbedded(question);
+        //fetch admin id from db
+
+        const isProd = process.env.NODE_ENV === "production";
+        const LlmApiConfig= await ApiProviderConfig.findOne({adminId})
+
+        let embeddedQuestion; 
+
+        if(LlmApiConfig?.embeddedProvider && LlmApiConfig.embeddedApiKey && LlmApiConfig.embeddedModel){
+           embeddedQuestion= GetEmbeddedProvider(
+                LlmApiConfig.embeddedProvider, 
+                {
+                    apiKey:LlmApiConfig.embeddedApiKey,
+                    model:LlmApiConfig.embeddedModel
+                }
+            ).generateEmbedding(question)
+        }
+        else if(!isProd){
+            embeddedQuestion=await OllamaQuestionToEmbedded(question);
+        }
+        else{
+            //free version of google gemini embedded cloud
+            embeddedQuestion = GetEmbeddedProvider(
+                "gemini",
+                {
+                    apiKey:env.EMBEDDING_API_KEY,
+                    model:env.EMBEDDING_MODEL
+                }
+            )
+        }
+
+        //conver question to embedded 
+        // const embeddedQuestion= await OllamaQuestionToEmbedded(question);
+
         //check semantic cache 
         const semanticCacheHit= await checkSemanticCache(botId ,embeddedQuestion);
 
