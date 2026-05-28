@@ -19,7 +19,11 @@ export  const env= {
     REDIS_URL:process.env.REDIS_URL,
 
     QDRANT_VECTORDB_URL:process.env.QDRANT_VECTORDB_URL,
-    QDRANT_API_KEY:process.env.QDRANT_API_KEY
+    QDRANT_API_KEY:process.env.QDRANT_API_KEY,
+
+    //free gemini llm 
+    GOOGLE_GEMINI_LLM_API_KEY:process.env.GOOGLE_GEMINI_LLM_API_KEY,
+    GOOGLE_GEMINI_LLM_MODEL:process.env.GOOGLE_GEMINI_LLM_MODEL
 }
 
 

@@ -10,6 +10,12 @@ import { env } from "../config/env";
 
 export const router= Router();
 
+interface AskAiApiConfigForLlm {
+    apiKey?: string 
+    model?:  string 
+    type?: "ollama" | "gemini" | "openai" | null
+}
+
 router.post("/",async(req:Request , res:Response)=>{
     try{
         const {question,botId , adminId}=req.body;
@@ -56,10 +62,10 @@ router.post("/",async(req:Request , res:Response)=>{
         const isProd = process.env.NODE_ENV === "production";
         const LlmApiConfig= await ApiProviderConfig.findOne({adminId})
 
-        let embeddedQuestion; 
+        let embeddedQuestion:number[]; 
 
         if(LlmApiConfig?.embeddedProvider && LlmApiConfig.embeddedApiKey && LlmApiConfig.embeddedModel){
-           embeddedQuestion= GetEmbeddedProvider(
+           embeddedQuestion= await GetEmbeddedProvider(
                 LlmApiConfig.embeddedProvider, 
                 {
                     apiKey:LlmApiConfig.embeddedApiKey,
@@ -72,13 +78,13 @@ router.post("/",async(req:Request , res:Response)=>{
         }
         else{
             //free version of google gemini embedded cloud
-            embeddedQuestion = GetEmbeddedProvider(
+            embeddedQuestion = await GetEmbeddedProvider(
                 "gemini",
                 {
                     apiKey:env.EMBEDDING_API_KEY,
                     model:env.EMBEDDING_MODEL
                 }
-            )
+            ).generateEmbedding(question)
         }
 
         //conver question to embedded 
@@ -100,7 +106,14 @@ router.post("/",async(req:Request , res:Response)=>{
         
         console.log("question embedding in /ask  route =", embeddedQuestion);
 
-        const answer= await askAi(embeddedQuestion,question, botId);
+        //config
+        const llmCOnfig:AskAiApiConfigForLlm={
+            apiKey:LlmApiConfig?.llmApiKey ?? undefined,
+            model:LlmApiConfig?.llmModel ?? undefined,
+            type:LlmApiConfig?.llmProvider
+        }
+        
+        const answer= await askAi(embeddedQuestion,question, botId , llmCOnfig);
         console.log("answer is = ", answer);
 
         //1: redis cache the question =>
@@ -108,9 +121,6 @@ router.post("/",async(req:Request , res:Response)=>{
 
         //semantic cache 1=>
         const semanticCached= await CacheSemantic(botId , question , answer ,embeddedQuestion);
-
-
-
 
 
         res.status(200).json({
