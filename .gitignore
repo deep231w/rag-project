@@ -3,3 +3,4 @@ node_modules
 uploads
 .env.local
 .env.docker
+dist
