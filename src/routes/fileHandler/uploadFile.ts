@@ -16,7 +16,7 @@ export const UploadRouter: FileRouter = {
   pdfUploader: f({
     pdf: {
       maxFileSize: "8MB",
-      maxFileCount: 1,
+      maxFileCount: 5,
     },
   })
     .input(

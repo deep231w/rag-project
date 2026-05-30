@@ -3,11 +3,11 @@ import { required } from "zod/mini";
 
 const fileSchema= new mongoose.Schema(
     {
-        name:{type:String , require:true},
-        url:{type:String ,require:true},
+        name:{type:String , required:true},
+        url:{type:String ,required:true},
         type:String,
-        size:String,
-        uploadedAt:{type:Date ,default :Date.now()}
+        size:Number,
+        uploadedAt:{type:Date ,default :Date.now}
     }
 )
 const botSchema= new mongoose.Schema(
