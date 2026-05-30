@@ -5,9 +5,9 @@ export const router= Router();
 
 router.post("/create",async(req:Request, res:Response)=>{
     try{
-        const {name, adminId}=req.body;
+        const {name, adminId , description}=req.body;
 
-        if(!name || !adminId){
+        if(!name || !adminId || !description){
             res.status(400).json({
                 message:"please complete credentials"
             })
@@ -16,7 +16,8 @@ router.post("/create",async(req:Request, res:Response)=>{
 
         const newBot= await Bot.create({
             name,
-            adminId
+            adminId,
+            description
         })
 
         res.status(200).json({

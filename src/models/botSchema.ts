@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { required } from "zod/mini";
 
 const fileSchema= new mongoose.Schema(
     {
@@ -12,6 +13,7 @@ const fileSchema= new mongoose.Schema(
 const botSchema= new mongoose.Schema(
     {
         name:{type:String , required:true},
+        description:{type:String , required: true},
         adminId:{type:String, required:true},
         files:[fileSchema]
     },
