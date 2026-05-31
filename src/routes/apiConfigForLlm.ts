@@ -2,7 +2,7 @@ import { Router , Response ,Request} from "express";
 import { ApiProviderConfig } from "../models/apiProviderConfig";
 import z from "zod";
 
-const route =  Router();
+export const route =  Router();
 
 const GetConfigSchema= z.object({
     adminId:z.string().min(1)

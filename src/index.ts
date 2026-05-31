@@ -10,6 +10,7 @@ import cors from 'cors';
 import { redis } from './redis/redis';
 import { createRouteHandler } from 'uploadthing/express';
 import { UploadRouter } from './routes/fileHandler/uploadFile';
+import {route as ConfigROute} from "./routes/apiConfigForLlm"
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -38,6 +39,8 @@ app.use(("/ask"),askQuestion);
 app.use(("/deletecollection"), deletecollection);
 app.use(("/admin"), adminAuth);
 app.use(("/bot"), botRoutr);
+app.use(("/confg") ,ConfigROute);
+
 //files
 
 
