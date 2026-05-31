@@ -14,6 +14,12 @@ export const qdrant = new QdrantClient(config);
 
 
 export async function ensureCollection() {
+
+  //for now its only support 3072 and 768 imension , 3072 for prod using gemini model and 768 for locally running ollama model 
+  const isProd = process.env.NODE_ENV === "production";
+  const VECTOR_SIZE = isProd ? 3072 : 768;
+
+
   const collection= await qdrant.getCollections();
   const exist = collection.collections.some(
     (c)=>c.name=='docs'
@@ -25,7 +31,7 @@ export async function ensureCollection() {
   if(!exist){
     await qdrant.createCollection('docs',{
       vectors:{
-        size:768,
+        size:VECTOR_SIZE,
         distance:"Cosine"
       }
     })
@@ -35,7 +41,7 @@ export async function ensureCollection() {
   if(!existCache){
     await qdrant.createCollection("qa_cache",{
       vectors:{
-        size:768,
+        size:VECTOR_SIZE,
         distance:"Cosine"
       }
     })
