@@ -123,13 +123,16 @@ router.post("/",async(req:Request , res:Response)=>{
         const semanticCached= await CacheSemantic(botId , question , answer ,embeddedQuestion);
 
 
-        res.status(200).json({
+        return res.status(200).json({
             message:"success!",
             answer
         });
     }catch(e){
         console.log("error in ask question api -", e);
-        throw e;
+
+        return res.status(500).json({
+            message: "Internal server error"
+        });
     }
 })
 

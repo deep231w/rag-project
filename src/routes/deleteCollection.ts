@@ -15,12 +15,16 @@ router.delete('/',async( req:Request ,res:Response)=>{
         const response =await qdrant.deleteCollection(`${collectionName}`)
         console.log("delete collection route response- ", response);
 
-        res.status(200).json({
+        return res.status(200).json({
             message:"collection deleted successfully !",
             collectionName:collectionName
         })
 
     }catch(e){
         console.log("error in delete collection route -",e);
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+
     }
 })

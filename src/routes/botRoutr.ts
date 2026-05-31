@@ -61,14 +61,14 @@ router.get("/getbotsdata", async(req:Request , res:Response)=>{
             return;
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             message:"bots fetched",
             bots:bots
         })
 
     }catch(e){
             console.log("error in get bot data api-", e);
-            res.status(500).json({
+            return res.status(500).json({
                 message:"server error "
             })
     }

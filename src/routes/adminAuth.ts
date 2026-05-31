@@ -97,7 +97,7 @@ route.post("/signin", async(req:Request, res:Response)=>{
         }
         const token=jwt.sign(payload , env.MY_JWT_SECRET  , {expiresIn:'1h'});
 
-        res.status(200).json({
+        return res.status(200).json({
             message:"user logged in successful",
             admin:payload,
             token:token
@@ -105,6 +105,10 @@ route.post("/signin", async(req:Request, res:Response)=>{
 
     }catch(e){
         console.log("error in admin signup route =", e);
+        return res.status(500).json({
+            message: "Internal server error"
+        });
+
     }
 
 })
