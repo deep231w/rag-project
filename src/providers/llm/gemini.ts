@@ -37,8 +37,11 @@ export class GeminiLlmProvider implements LlmProvider{
             })
 
             console.log("Gemini llm res- ",response );
-            
-            return ""
+            // console.log("res text================", response.text)
+            // console.dir(response, { depth: null });
+            // console.log("candidates ........... ....res- ",   response?.candidates?.[0]?.content?.parts?.[0]?.text)
+
+            return response.text ?? "";
         }catch(e){
             console.log("error during gemini llm gen : ",e)
             throw new Error("LLM generation error occured ");

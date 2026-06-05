@@ -43,7 +43,13 @@ export default async function askAi(queryEmbedding:number[],question:string, bot
         }).generate(question , context);
 
     }else if(!isProd){
-        answer= await OllamaQueryQuestion(context ,question);
+        // answer= await OllamaQueryQuestion(context ,question);
+        //testing for cloud now
+        answer= await  getLLMProvider("gemini", {
+            apiKey:env.GOOGLE_GEMINI_LLM_API_KEY,
+            model:env.GOOGLE_GEMINI_LLM_MODEL
+        }).generate(question , context)
+        
     }else{
         answer= await  getLLMProvider("gemini", {
             apiKey:env.GOOGLE_GEMINI_LLM_API_KEY,

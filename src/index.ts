@@ -35,7 +35,7 @@ app.use("/api/uploadthing",createRouteHandler({
 app.use(express.json());
 
 app.use(("/upload"),router );
-app.use(("/ask"),askQuestion);
+app.use(("/askai"),askQuestion);
 app.use(("/deletecollection"), deletecollection);
 app.use(("/admin"), adminAuth);
 app.use(("/bot"), botRoutr);
