@@ -51,4 +51,31 @@ export async function ensureCollection() {
 
   console.log("qudrant collection 'docs' && 'qa_cache' established! ");
 
+    // Ensure payload indexes exist
+  try {
+    await qdrant.createPayloadIndex("docs", {
+      field_name: "botId",
+      field_schema: "keyword",
+    });
+
+    console.log("docs.botId index created");
+  } catch (err) {
+    console.log("docs.botId index already exists");
+  }
+
+  try {
+    await qdrant.createPayloadIndex("qa_cache", {
+      field_name: "botId",
+      field_schema: "keyword",
+    });
+
+    console.log("qa_cache.botId index created");
+  } catch (err) {
+    console.log("qa_cache.botId index already exists");
+  }
+
+  console.log(
+    "Qdrant collections and payload indexes established!"
+  );
+
 }
