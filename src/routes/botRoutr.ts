@@ -1,75 +1,57 @@
 import { Request, Response, Router } from "express";
 import { Bot } from "../models/botSchema";
+import { requireAuth, type AuthRequest } from "../middleware/auth";
 
 export const router= Router();
 
-router.post("/create",async(req:Request, res:Response)=>{
+router.post("/create", requireAuth, async(req: AuthRequest, res:Response)=>{
     try{
-        const {name, adminId , description}=req.body;
+        const user = req.user;
+        const {name, description}=req.body;
 
-        if(!name || !adminId || !description){
-            res.status(400).json({
-                message:"please complete credentials"
-            })
-            return;
+        if(!user || !name || !description){
+            return res.status(400).json({ message:"Please complete all required fields."});
         }
 
         const newBot= await Bot.create({
-            name,
-            adminId,
-            description
-        })
+            name: String(name),
+            adminId: user.userId,
+            description: String(description),
+        });
 
-        res.status(200).json({
+        return res.status(200).json({
             message:"bot created",
-            bot:newBot
-        })
+            bot:newBot,
+        });
 
     }catch(e:any){
         if(e.code==11000){
             return res.status(400).json({
-                message: "Bot with this name already exists for this admin",
+                message: "Bot with this name already exists for this user.",
             });
         }
 
         console.log("error in creat bot api- ", e); 
-        res.status(500).json({message:"server error"});
+        return res.status(500).json({message:"server error"});
     }
 })
 
-        
-router.get("/getbotsdata", async(req:Request , res:Response)=>{
+router.get("/getbotsdata", requireAuth, async(req: AuthRequest, res:Response)=>{
     try{
-        let {adminId}=req.query;
-        
-        if(Array.isArray(adminId)){
-            adminId=adminId[0];
+        const user = req.user;
+        if (!user) {
+            return res.status(401).json({ message: "Authentication required." });
         }
 
-        if(!adminId || typeof adminId !== "string"){
-            res.status(400).json({message:"credentials misssing"});
-            return;
-        }
-
-        const bots= await Bot.find({adminId});
-        console.log("bots =" ,bots);
-
-        if(!bots){
-            res.status(404).json({
-                message:"you dont have any bots"
-            })
-            return;
-        }
+        const bots= await Bot.find({adminId: user.userId});
 
         return res.status(200).json({
             message:"bots fetched",
-            bots:bots
-        })
+            bots,
+        });
 
     }catch(e){
-            console.log("error in get bot data api-", e);
-            return res.status(500).json({
-                message:"server error "
-            })
+        console.log("error in get bot data api-", e);
+        return res.status(500).json({ message:"server error" });
     }
 })

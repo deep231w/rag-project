@@ -4,6 +4,8 @@ import { Bot } from "../../models/botSchema";
 import extractText from "../../lib/extractTextFromPdf";
 import { ingestChunk } from "../../services/ingent.service";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
+import { env } from "../../config/env";
 
 const f = createUploadthing<{
   pdfUploader: {
@@ -33,18 +35,15 @@ export const UploadRouter: FileRouter = {
     })
     .onUploadComplete(async ({file ,metadata}) => {
         try{
-          console.log("metadata in uploadFile =" ,metadata);
-          console.log("file in uploadthing- ", file);
-
-
           const {botId, adminId}=metadata;
           if(!botId || !adminId){
             console.log("missing metadata in uploadthing url ");
             return;
           }
 
-          if(!botId){
-            console.log("botId missing in uploadFile on uploadcomplete handler")
+          const bot = await Bot.findOne({ _id: botId, adminId });
+          if (!bot) {
+            console.log("Unauthorized upload attempt for bot ", botId);
             return;
           }
 
@@ -67,27 +66,17 @@ export const UploadRouter: FileRouter = {
             {returnDocument:'after'}
           )
 
-          console.log("file uploaded db res-", fileUploaded);
-          console.log("file new file =", newFile);
-
-          //after upload
           const text =  await extractText(file.ufsUrl)
-          console.log("extracted text- ", text);
-          
           const response = await ingestChunk(botId, adminId,"docs", text, {
                                               source: file.name,
                                               page: 300,
                                               fileId:newFile._id
                                           });
-  
-          console.log("response of ingest chunk -", response);
 
           console.log("file processed successfully.......... !!");
-
 
         }catch(e){
           console.log("error in file push to bot schema ",e);
         }
-        
     }),
 };

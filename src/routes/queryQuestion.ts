@@ -7,6 +7,8 @@ import { checkSemanticCache } from "../services/checkSemantic.service";
 import { ApiProviderConfig } from "../models/apiProviderConfig";
 import { GetEmbeddedProvider } from "../providers/GetEmbeddedProvider";
 import { env } from "../config/env";
+import { requireAuth, type AuthRequest } from "../middleware/auth";
+import { Bot } from "../models/botSchema";
 
 export const router= Router();
 
@@ -16,51 +18,36 @@ interface AskAiApiConfigForLlm {
     type?: "ollama" | "gemini" | "openai" | null
 }
 
-router.post("/",async(req:Request , res:Response)=>{
+router.post("/", requireAuth, async(req: AuthRequest, res:Response)=>{
     try{
-        const {question,botId , adminId}=req.body;
-
-
-        console.log("question is -", question);
-        if(!question || !botId || !adminId) {
-            res.status(400).json({
-                message:"credential missing"
-            })
-            return;
+        const user = req.user;
+        if (!user) {
+            return res.status(401).json({ message: "Authentication required." });
         }
 
-        //2:redis hashed cache checking from redis =>
+        const {question, botId } = req.body;
+
+        if(!question || !botId) {
+            return res.status(400).json({ message:"credential missing" });
+        }
+
+        const bot = await Bot.findOne({ _id: botId, adminId: user.userId });
+        if (!bot) {
+            return res.status(403).json({ message: "You do not have access to this bot." });
+        }
+
         const HashedCacheHit= await CheckHashedCaching(question ,botId);
-        console.log("cache hit in quesry route -", HashedCacheHit);
         if(HashedCacheHit){
-            console.log("hashed cache hit successfully in query route -", HashedCacheHit);
-            return res.status(200).json({
-                message:"success!",
-                answer:HashedCacheHit
-            })
-            
-        }else{
-            console.log(" hashed cache check missed ---------------------");
+            return res.status(200).json({ message:"success!", answer:HashedCacheHit });
         }
 
-
-        //3:redis normalised cache checking =>
         const normlzAns= await NormalisedCacheChecking(question ,botId);
-        console.log("Normalised cache in quesry route -", normlzAns);
         if(normlzAns){
-            console.log("normalised cache hit successfully in query route -", normlzAns);
-            return res.status(200).json({
-                message:"success!",
-                answer:normlzAns
-            })
-        }else{
-            console.log("normalised cache missed =================================");
+            return res.status(200).json({ message:"success!", answer:normlzAns });
         }
-        
-        //fetch admin id from db
 
         const isProd = process.env.NODE_ENV === "production";
-        const LlmApiConfig= await ApiProviderConfig.findOne({adminId})
+        const LlmApiConfig= await ApiProviderConfig.findOne({adminId: user.userId})
 
         let embeddedQuestion:number[]; 
 
@@ -77,7 +64,6 @@ router.post("/",async(req:Request , res:Response)=>{
             embeddedQuestion=await OllamaQuestionToEmbedded(question);
         }
         else{
-            //free version of google gemini embedded cloud
             embeddedQuestion = await GetEmbeddedProvider(
                 "gemini",
                 {
@@ -87,52 +73,27 @@ router.post("/",async(req:Request , res:Response)=>{
             ).generateEmbedding(question)
         }
 
-        //conver question to embedded 
-        // const embeddedQuestion= await OllamaQuestionToEmbedded(question);
-
-        //check semantic cache 
         const semanticCacheHit= await checkSemanticCache(botId ,embeddedQuestion);
 
         if(semanticCacheHit){
-            console.log("semantic cache hit in quesry route",semanticCacheHit);
-            return res.status(200).json({
-                message:"success!",
-                answer:semanticCacheHit
-            })
-        }else{
-            console.log("semantic cache missed =================================");
+            return res.status(200).json({ message:"success!", answer:semanticCacheHit });
         }
 
-        
-        console.log("question embedding in /ask  route =", embeddedQuestion);
-
-        //config
         const llmCOnfig:AskAiApiConfigForLlm={
             apiKey:LlmApiConfig?.llmApiKey ?? undefined,
             model:LlmApiConfig?.llmModel ?? undefined,
             type:LlmApiConfig?.llmProvider
         }
         
-        const answer= await askAi(embeddedQuestion,question, botId , llmCOnfig);
-        console.log("answer is = ", answer);
+        const answer= await askAi(embeddedQuestion, question, botId , llmCOnfig);
 
-        //1: redis cache the question =>
         const cachedq = await MultipleTypeQuestionCache(question ,answer , botId);
-
-        //semantic cache 1=>
         const semanticCached= await CacheSemantic(botId , question , answer ,embeddedQuestion);
 
-
-        return res.status(200).json({
-            message:"success!",
-            answer
-        });
+        return res.status(200).json({ message:"success!", answer });
     }catch(e){
         console.log("error in ask question api -", e);
-
-        return res.status(500).json({
-            message: "Internal server error"
-        });
+        return res.status(500).json({ message: "Internal server error" });
     }
 })
 
