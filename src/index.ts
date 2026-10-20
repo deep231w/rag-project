@@ -64,7 +64,7 @@ async function start(){
   await conectMongo();
   await redis.connect();
 
-  redis.on("connect",()=>console.log("redis connected !!"))
+  // redis.on("connect",()=>console.log("redis connected !!"))
   
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running at http://localhost:${PORT}`);
