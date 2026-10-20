@@ -1,36 +1,41 @@
-import { createClient } from "redis";
+import { Redis } from "@upstash/redis";
 import { env } from "../config/env";
 
-export const redis = createClient({
-  url: env.REDIS_URL,
-  socket: {
-    reconnectStrategy(retries) {
-      if (retries > 10) {
-        console.error("Redis: maximum reconnect attempts reached");
-        return new Error("Redis reconnect limit reached");
-      }
-
-      return Math.min(retries * 500, 5000);
-    },
-  },
+export const redis = new Redis({
+  url: env.UPSTASH_REDIS_REST_URL,
+  token: env.UPSTASH_REDIS_REST_TOKEN,
 });
 
-redis.on("error", (err) => {
-  console.error("Redis client error:", err.message);
-});
+// export const redis = createClient({
+//   url: env.REDIS_URL,
+//   socket: {
+//     reconnectStrategy(retries) {
+//       if (retries > 10) {
+//         console.error("Redis: maximum reconnect attempts reached");
+//         return new Error("Redis reconnect limit reached");
+//       }
 
-redis.on("connect", () => {
-  console.log("Redis TCP connection established");
-});
+//       return Math.min(retries * 500, 5000);
+//     },
+//   },
+// });
 
-redis.on("ready", () => {
-  console.log("Redis client ready");
-});
+// redis.on("error", (err) => {
+//   console.error("Redis client error:", err.message);
+// });
 
-redis.on("reconnecting", () => {
-  console.log("Redis reconnecting...");
-});
+// redis.on("connect", () => {
+//   console.log("Redis TCP connection established");
+// });
 
-redis.on("end", () => {
-  console.log("Redis connection closed");
-});
+// redis.on("ready", () => {
+//   console.log("Redis client ready");
+// });
+
+// redis.on("reconnecting", () => {
+//   console.log("Redis reconnecting...");
+// });
+
+// redis.on("end", () => {
+//   console.log("Redis connection closed");
+// });

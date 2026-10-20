@@ -23,7 +23,11 @@ export  const env= {
 
     //free gemini llm 
     GOOGLE_GEMINI_LLM_API_KEY:process.env.GOOGLE_GEMINI_LLM_API_KEY,
-    GOOGLE_GEMINI_LLM_MODEL:process.env.GOOGLE_GEMINI_LLM_MODEL
+    GOOGLE_GEMINI_LLM_MODEL:process.env.GOOGLE_GEMINI_LLM_MODEL,
+
+    // upstash redis
+    UPSTASH_REDIS_REST_URL:process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN:process.env.UPSTASH_REDIS_REST_TOKEN
 }
 
 

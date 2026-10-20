@@ -62,7 +62,6 @@ async function start(){
   // await waitforEnsureCollection();
   await ensureCollection();
   await conectMongo();
-  await redis.connect();
 
   // redis.on("connect",()=>console.log("redis connected !!"))
   
