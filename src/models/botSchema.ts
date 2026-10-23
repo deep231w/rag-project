@@ -12,6 +12,7 @@ const fileSchema= new mongoose.Schema(
 )
 const botSchema= new mongoose.Schema(
     {
+        botKey:{type:String},
         name:{type:String , required:true},
         description:{type:String , required: true},
         adminId:{type:String, required:true},

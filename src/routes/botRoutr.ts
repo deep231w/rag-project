@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { Bot } from "../models/botSchema";
 import { requireAuth, type AuthRequest } from "../middleware/auth";
-
+import { randomBytes } from "node:crypto";
 export const router= Router();
 
 router.post("/create", requireAuth, async(req: AuthRequest, res:Response)=>{
@@ -12,8 +12,9 @@ router.post("/create", requireAuth, async(req: AuthRequest, res:Response)=>{
         if(!user || !name || !description){
             return res.status(400).json({ message:"Please complete all required fields."});
         }
-
+        const botKey= randomBytes(32).toString('hex')
         const newBot= await Bot.create({
+            botKey:botKey,
             name: String(name),
             adminId: user.userId,
             description: String(description),
