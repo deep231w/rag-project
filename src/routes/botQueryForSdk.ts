@@ -19,7 +19,7 @@ interface AskAiApiConfigForLlm {
     type?: "ollama" | "gemini" | "openai" | null
 }
 
-router.post("/", requireAuth, async(req: AuthRequest, res:Response)=>{
+router.post("/", async(req: AuthRequest, res:Response)=>{
     try{
 
         const {question, botId, botKey } = req.body;

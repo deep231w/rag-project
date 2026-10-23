@@ -10,7 +10,7 @@ import cors from 'cors';
 import { createRouteHandler } from 'uploadthing/express';
 import { UploadRouter } from './routes/fileHandler/uploadFile';
 import {route as ConfigROute} from "./routes/apiConfigForLlm"
-
+import { router as botQuerySdk } from './routes/botQueryForSdk'; 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -42,6 +42,7 @@ app.use(("/deletecollection"), deletecollection);
 app.use(("/admin"), adminAuth);
 app.use(("/bot"), botRoutr);
 app.use(("/confg") ,ConfigROute);
+app.use(("/ask-bot-sdk"), botQuerySdk)
 
 async function start(){
   await ensureCollection();
