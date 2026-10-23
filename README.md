@@ -4,6 +4,8 @@ A Retrieval-Augmented Generation (RAG) backend system with **multi-layer caching
 
 ---
 
+**Frontend Repo Link: [https://github.com/deep231w/rag-frontend](https://github.com/deep231w/rag-frontend)**
+
 # Architecture Overview
 
 This project uses the following stack:
